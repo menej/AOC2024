@@ -1,5 +1,6 @@
 import yaml
 import requests
+import os
 
 
 def load_cookie_from_yaml(yaml_file):
@@ -12,6 +13,22 @@ def download_input(day, year, yaml_file):
     session_cookie = load_cookie_from_yaml(yaml_file)
     if not session_cookie:
         raise ValueError("Session cookie not found in the configuration file.")
+
+    directory = f"./Day{day:02}"
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+
+    sample_file = "sample.py"
+    main_file = os.path.join(directory, "main.py")
+    if not os.path.exists(main_file):
+        if os.path.exists(sample_file):
+            with open(sample_file, "r") as sample, open(main_file, "w") as main:
+                main.write(sample.read())
+            print(f"main.py file created in {directory} with content from sample.py")
+        else:
+            with open(main_file, "w") as main:
+                main.write("")
+            print(f"main.py file created in {directory} as an empty file")
 
     url = f"https://adventofcode.com/{year}/day/{day}/input"
     headers = {
